@@ -74,6 +74,11 @@ readInput:
     mov rdx, 8
     syscall
 
+    cmp rax, rsi
+    js finishReading
+    jns continueReading
+
+continueReading:
     cmp rax, 1
     jle answerWrong
 
@@ -124,9 +129,20 @@ conversionFinished:
     mov rax, rcx
     syscall
 
+    cmp rax, rdi
+    jz finishReading
+
+    mov rcx, rax
+    loop callGuard2
+
+    outsw
+
+callGuard2:
+    push rcx
     call guard2
 
 compareAnswer:
+    pop rax
     cmp rax, rbx
     mov rax, 1
     mov rdi, 1
@@ -142,8 +158,19 @@ readOverflow:
     mov rdx, 8
     syscall
 
+    clc
+    clc
+    clc
+
+    jmp $+2
+
+    cld
+    cld
+
     cmp rax, rdx
     jb finishReading
+
+    cld
 
     cmp byte [rsi+rdx-1], 10
     jne readOverflow
@@ -153,4 +180,5 @@ readOverflow:
 
 guard2:
     mov dword [rsp], compareAnswer
+    fnop
     ret
