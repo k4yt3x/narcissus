@@ -29,24 +29,25 @@ _start:
 
     ; will never be reached
     ; makes the disassembler recognize the fake functions as subroutines
+    call _start+1
 
-    ; make the first 0xFF bytes functions
-    %assign i 1
-    %rep 0xFF
-        call _start + i
+    ; make the first 300 bytes functions
+    %assign i 0
+    %rep 300
+        call answerWrong + i
         %assign i i+1
     %endrep
 
     ; make the INT3 bytes functions
     %assign i 0
-    %rep 1024
+    %rep 256
         call fakeFunction + i
         %assign i i+1
     %endrep
 
-    ; make the last 0xFF bytes functions
-    %assign i 1
-    %rep 0xFF
+    ; make the last 300 bytes functions
+    %assign i 0
+    %rep 300
         call end - i
         %assign i i+1
     %endrep
@@ -240,11 +241,11 @@ fakeFunction:
     ret
 
     ; jump to the address of the `pop rax` below
-    mov rcx, $+1036
+    mov rcx, $+268
     jmp rcx
 
     ; 1024x INT3
-    db 1024 dup(0xCC)
+    db 256 dup(0xCC)
 
     ; restore PID from stack
     pop rax
